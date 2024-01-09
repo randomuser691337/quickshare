@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>QuickWrite</title>
     <style>
         body {
             background-color: #000;
             color: #eee;
-            font-family: sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-size: 16px;
+            margin: 0px;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('./Roboto-Regular.ttf');
+        }
+
+        @font-face {
+            font-family: 'RobotoBold';
+            src: url('./Roboto-Bold.ttf');
         }
 
         textarea {
@@ -16,35 +26,52 @@
             height: 500px;
             padding: 10px;
             border: none;
-            background-color: #1a1a1a;
+            background-color: #000;
             box-sizing: border-box;
             font-family: monospace;
             color: #fff;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 2px;
+            font-size: 14px;
+            max-width: 100%;
+            outline: none;
         }
 
-        #save-button {
-            background-color: #1a1a1a;
+        textarea:focus {
+            border-left: 5px solid #1a1a1a;
+            border-right: 5px solid #1a1a1a;
+        }
+
+        button {
+            background-color: #2a2a2a;
             color: white;
-            padding: 10px;
+            padding: 6px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        button:hover {
+            background: #4a4a4a;
+        }
+
+        button:active {
+            background: #6a6a6a;
         }
 
         #display-container {
-            position: fixed;
-            left: 20px; right: 20px; top: 20px; bottom: 20px;
             z-index: 1;
             display: none;
+            padding: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
         }
 
         p {
             margin: 0px;
             padding: 0px;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
         h2 {
@@ -52,35 +79,104 @@
             padding: 0px;
             margin-bottom: 3px;
         }
+
+        #menubar {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px;
+            background-color: #1a1a1a;
+            text-align: center;
+        }
+
+        .help {
+            font-size: 14px;
+            color: #999;
+        }
+
+        #yeah {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            display: none;
+            transform: translate(-50%, -50%);
+            padding: 12px;
+            background-color: #1a1a1a;
+            text-align: center;
+            z-index: 4;
+            border-radius: 10px;
+            max-width: 85%;
+            cursor: pointer;
+            max-width: 240px;
+            max-height: 87%;
+        }
+
+        #yeah:hover {
+            background-color: #2a2a2a;
+        }
+
+        #yeah:active {
+            background-color: #3a3a3a;
+        }
+
+        .li {
+            background-color: #2a2a2a;
+            width: 100%;
+            box-sizing: border-box;
+            height: 3px;
+            margin-bottom: 3px;
+        }
+
+        .b {
+            font-family: 'RobotoBold', sans-serif;
+        }
     </style>
 </head>
-
 <body>
-    <div id="editor-container">
-        <textarea id="editor"></textarea>
-        <button id="save-button">Save and Open</button>
+    <div id="menubar">
+        <span id="mode" style="margin-right: 6px;">Editing</span><button id="save-button">Share...</button><button
+            id="edit-button" style="display: none;" onclick="openeditor();">Edit...</button><button onclick="opensettings();">Settings...</button>
     </div>
+    <textarea id="editor-container" placeholder="Click here and start typing!"></textarea>
     <div id="display-container">
     </div>
+    <div id="yeah" onclick="dialog.style.display = 'none';"></div>
     <script>
-        const editorContainer = document.getElementById("editor-container");
-        const displayContainer = document.getElementById("display-container");
-        const editor = document.getElementById("editor");
-        const saveButton = document.getElementById("save-button");
+        var editorContainer = document.getElementById("editor-container");
+        var displayContainer = document.getElementById("display-container");
+        var editor = document.getElementById("editor-container");
+        var mode = document.getElementById("mode");
+        var saveButton = document.getElementById("save-button");
+        var editButton = document.getElementById("edit-button");
+        var dialog = document.getElementById("yeah");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const path = urlParams.get("path");
+        var urlParams = new URLSearchParams(window.location.search);
+        var path = urlParams.get("path");
 
         if (path) {
             displayContainer.innerHTML = path;
             editorContainer.style.display = "none";
             displayContainer.style.display = "block";
-        } else {
-            saveButton.addEventListener("click", () => {
-                const content = editor.value;
-                const newUrl = `?path=${encodeURIComponent(content)}`;
-                window.open(newUrl, "_blank");
-            });
+            editButton.style.display = "inline";
+            saveButton.style.display = "none";
+            mode.innerText = "Viewing"
+            dialog.style.display = "block";
+            dialog.innerHTML = "<p>Link ready to be shared!</p><p>Copy the link in your URL bar, paste it wherever, and the recipient can click it and see the document.</p><p class='help'>Click this pop-up to dismiss</p>"
+        }
+
+        saveButton.addEventListener("click", () => {
+            var content = editor.value;
+            var newUrl = `?path=${encodeURIComponent(content)}`;
+            window.location.replace(newUrl);
+        });
+
+        function openeditor() {
+            editorContainer.style.display = "block";
+            displayContainer.style.display = "none"
+            editor.innerHTML = displayContainer.innerHTML;
+            editButton.style.display = "none";
+            saveButton.style.display = "inline";
+            dialog.style.display = "none";
+            mode.innerText = "Editing -"
         }
     </script>
 </body>
