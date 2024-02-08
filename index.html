@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <script>function panic(err) { console.log(`This ain't WebDesk, but here's your error: ${err}`); } var crashed = false; let NTName = "quickwr";</script>
+    <script src="https://lobotomi.vercel.app/assets/code/idb.js"></script>
     <title>QuickWrite</title>
     <style>
+        :root {
+            --accent: #000;
+        }
         body {
-            background-color: #000;
+            background-color: var(--accent);
             color: #eee;
             font-family: 'Roboto', sans-serif;
             font-size: 16px;
@@ -13,12 +19,12 @@
 
         @font-face {
             font-family: 'Roboto';
-            src: url('Roboto-Regular.ttf');
+            src: url('Poppins-Regular.ttf');
         }
 
         @font-face {
             font-family: 'RobotoBold';
-            src: url('Roboto-Bold.ttf');
+            src: url('Poppins-Bold.ttf');
         }
 
         textarea {
@@ -44,13 +50,13 @@
         button {
             background-color: #2a2a2a;
             color: white;
-            padding: 6px;
+            padding: 4px 7px;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 9px;
             font-size: 16px;
             font-family: 'Roboto', sans-serif;
             margin-right: 3px;
+            cursor: pointer;
         }
 
         button:hover {
@@ -84,7 +90,7 @@
         #menubar {
             width: 100%;
             box-sizing: border-box;
-            padding: 6px;
+            padding: 5px;
             background-color: #1a1a1a;
             text-align: center;
         }
@@ -104,19 +110,10 @@
             background-color: #1a1a1a;
             text-align: center;
             z-index: 4;
-            border-radius: 10px;
+            border-radius: 12px;
             max-width: 85%;
-            cursor: pointer;
             max-width: 240px;
             max-height: 87%;
-        }
-
-        #yeah:hover {
-            background-color: #2a2a2a;
-        }
-
-        #yeah:active {
-            background-color: #3a3a3a;
         }
 
         .li {
@@ -130,17 +127,34 @@
         .b {
             font-family: 'RobotoBold', sans-serif;
         }
+
+        .co {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .co:hover {
+            opacity: 70%;
+        }
+
+        .co:active {
+            opacity: 40%;
+        }
     </style>
 </head>
+
 <body>
     <div id="menubar">
-        <span id="mode" style="margin-right: 6px;">Editing</span><button id="save-button">Share...</button><button
-            id="edit-button" style="display: none;" onclick="openeditor();">Edit...</button><button onclick="opensettings();">Settings...</button>
+        <span id="mode" style="margin-right: 6px;">Editing</span><button id="save-button">Share</button><button
+            id="edit-button" style="display: none;" onclick="openeditor();">Edit</button><button
+            onclick="opensettings();">Settings</button>
     </div>
     <textarea id="editor-container" placeholder="Click here and start typing!"></textarea>
     <div id="display-container">
     </div>
-    <div id="yeah" onclick="dialog.style.display = 'none';"></div>
+    <div id="yeah"></div>
     <script>
         var editorContainer = document.getElementById("editor-container");
         var displayContainer = document.getElementById("display-container");
@@ -150,8 +164,8 @@
         var editButton = document.getElementById("edit-button");
         var dialog = document.getElementById("yeah");
 
-        var urlParams = new URLSearchParams(window.location.search);
-        var path = urlParams.get("path");
+        var urlDoc = new URLSearchParams(window.location.search);
+        var path = urlDoc.get("path");
 
         if (path) {
             displayContainer.innerHTML = path;
@@ -161,7 +175,7 @@
             saveButton.style.display = "none";
             mode.innerText = "Viewing"
             dialog.style.display = "block";
-            dialog.innerHTML = "<p>Link ready to be shared!</p><p>Copy the link in your URL bar, paste it wherever, and the recipient can click it and see the document.</p><p class='help'>Click this pop-up to dismiss</p>"
+            dialog.innerHTML = "<p>Link ready to be shared!</p><p>Copy the link in your URL bar, paste it wherever, and the recipient can click it and see this document.</p><button onclick='dialog.style.display = `none`' style='width: 100%; box-sizing: border-box;'>Close</button>"
         }
 
         saveButton.addEventListener("click", () => {
@@ -179,6 +193,44 @@
             dialog.style.display = "none";
             mode.innerText = "Editing -"
         }
+
+        function opensettings() {
+            dialog.style.display = "block";
+            dialog.innerHTML = `<p>Background Color (Experimental)</p><button class="co" style="background: #100;" onclick="chacc('#100');"></button><button class="co" style="background: #001;" onclick="chacc('#001');"></button>`
+        }
+
+        function changevar(varName, varValue) {
+            const root = document.documentElement;
+            root.style.setProperty(`--${varName}`, `${varValue}`);
+            writevar(varName, varValue);
+        }
+        function chacc(clr1) {
+            changevar('accent', clr1);
+        }
+    </script>
+    <script>
+        let started = false;
+        document.onreadystatechange = async function () {
+            try {
+                if (started === true) {
+                    console.log('Rejected doc.onreadychange (shortened)');
+                    return;
+                } else {
+                    const bl = await readvar('bootload');
+                    if (bl) {
+                        eval(bl);
+                    }
+                    started = true;
+                    const accent = await readvar('accent');
+                    if (accent) {
+                        chacc(accent);
+                    }
+                }
+            } catch (error) {
+                console.log(`<p>WebDesk encountered a critical error.</p><p>You can use Recovery, or try again.</p><button class="b1" onclick="mkw('${error}', 'Error Details', '280px');">Error Details</button><button class="b1" onclick="recovery();">Recovery</button><button class="b1" onclick="reboot();">Retry</button>`, 'Startup Error', '350px');
+            }
+        }
     </script>
 </body>
+
 </html>
